@@ -1,8 +1,8 @@
 // 04.09 DZ.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
-#include <iostream>
-#include <fstream>	
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>	
+#include <cstdio>
 using namespace std;	
 #define YELLOW_TEXT "\033[33m"	
 #define RESET_COLOR "\033[0m"
@@ -40,7 +40,8 @@ void Data_Input(Person* Employee, int &count)
 		}
 		cout << "\nВвод: ";
 		cin >> employee.number;
-	} while ((employee.number[0] != '(') || (employee.number[4] != ')'));
+
+	} while ((employee.number[0] != '(') || (employee.number[4] != ')'));				
 
 	cout << "Введите размер заработной платы: ";
 	cin >> employee.salary;	
@@ -159,13 +160,19 @@ int main()
 	setlocale(LC_ALL, "");
 	Person Employee[MAX_EMPLOYEES];		
 	int choise;	
-	int count = 0;		
+	int count = 0;	
+	FILE* file;
+	const char* path = "probni.txt";		
+	const int BUFFER_SIZE = 100;
+	char buffer[BUFFER_SIZE];	
+
+
 	do {
 		cout << "Выбирите действие: " << endl;
 		cout << "1 - добавление нового сотрудника" << endl;
 		cout << "2 - демонстрация содеожимого всей книги на экран" << endl;
 		cout << "3 - удаление сотрудника по выбору" << endl;
-		cout << "4 - сортировка по фамилии" << endl;	
+		cout << "4 - сортировка по фамилии" << endl;
 		cout << "5 - поиск по фамилии и демонстрация результатов на экран" << endl;
 		cout << "6 - поиск по диапазону зароботной платы и демонстрация результатов на экран" << endl;
 		cout << "7 - загрузка информации из файла" << endl;
@@ -178,39 +185,69 @@ int main()
 		case 1:
 			Data_Input(Employee, count);
 			PROBEL
-			break;
+				break;
 		case 2:
 			for (int i = 0; i < count; i++) {
-				Print(Employee+i);		
-				PROBEL	
+				Print(Employee + i);
+				PROBEL
 			}
-			break;	
+			break;
 		case 3:
 			Delete_Employee(Employee, count);
 			PROBEL
-			break;
+				break;
 		case 4:
-			SortingSurname(Employee, count);	
-			cout << GREEN_TEXT << "Сортиовка заверешена! " << RESET_COLOR << endl;	
-			PROBEL	
-			break;	
-		case 5:
-			SearchSurname(Employee, count);	
+			SortingSurname(Employee, count);
+			cout << GREEN_TEXT << "Сортировка завершена! " << RESET_COLOR << endl;
 			PROBEL
-			break;
+				break;
+		case 5:
+			SearchSurname(Employee, count);
+			PROBEL
+				break;
 		case 6:
 			SalarySearch(Employee, count);
-			PROBEL	
-			break;
+			PROBEL
+				break;
 		case 7:
-		
+
+			if (fopen_s(&file, path, "r") != 0) {	
+				cout << RED_TEXT << "Ошибка открытия файла." << RESET_COLOR << endl;
+				break; 
+			}
+
+			count = 0;	
+
+			while (count < MAX_EMPLOYEES && fgets(buffer, BUFFER_SIZE, file)) {
+				printf(buffer, "%s %s %s %lf", Employee[count].surname, Employee[count].name, Employee[count].number, &Employee[count].salary);	
+				count++;
+			}
+
+			fclose(file);
+
+			printf(GREEN_TEXT "\nИнформация успешно загружена из файла." RESET_COLOR "\n");	
 			break;
 		case 8:
-		
+			if (fopen_s(&file, path, "w") != 0) {
+				cout << RED_TEXT << "Ошибка открытия файла для записи." << RESET_COLOR << endl;
+				break;
+			}
+
+			for (int i = 0; i < count; i++) {
+				fprintf_s(file, "%s %s %s %.2lf\n", Employee[i].surname, Employee[i].name, Employee[i].number, Employee[i].salary);
+			}
+
+			fclose(file);
+
+			printf(GREEN_TEXT "Информация успешно записана в файл." RESET_COLOR "\n");	
 			PROBEL
-			break;
-		}	
-	} while (choise != 9);	
+				break;
+		}
+	} while (choise != 9);
+
+	delete[] Employee->surname;
+	delete[] Employee->name;
+	delete[] Employee->number;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
