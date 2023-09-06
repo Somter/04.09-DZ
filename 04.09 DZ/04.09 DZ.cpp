@@ -157,7 +157,7 @@ void Print(Person* Employee)
 
 int main()	
 {
-	setlocale(LC_ALL, "");
+	system("chcp 1251");
 	Person Employee[MAX_EMPLOYEES];		
 	int choise;	
 	int count = 0;	
